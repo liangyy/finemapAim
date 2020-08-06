@@ -6,3 +6,8 @@ I mostly follow the [paper]((https://github.com/jzou1115/aim)) "Methods" section
 I use both of the meta-analysis scheme S^M1 and S^M2 as suggested by the paper. 
 And we report the results of the scheme with smaller CS size on average.
 
+# Note 
+
+It relies on the current screen shot of susieR (610b5bb754e9c9f970eef15a5a194fb9dc421caa).
+It matters since it relies on `susieR::susie_rss`.
+

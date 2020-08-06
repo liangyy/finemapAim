@@ -12,7 +12,7 @@
 
 .get_ld = function(mat) {
   mat = .standardize(mat)
-  t(mat) %*% mat
+  cor(mat)
 }
 
 .get_heterozygosity = function(mat) {
