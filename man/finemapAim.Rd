@@ -40,3 +40,21 @@ the original paper). This change is simply to speed up the computation when we w
 within a regulatory window. Among the two meta-analysis scheme (S^M1 and S^M2), we report the fine-mapping result
 of the one with smaller 95% on average.
 }
+\examples{
+\dontrun{
+nsnp = 100
+nindiv = 200
+eqtl = rnorm(nsnp)
+eqtl[1] = 12.5
+eqtl[10] = 8.3
+geno1 = matrix(sample(c(0, 1), nindiv * nsnp, replace = T), ncol = nsnp)
+geno2 = matrix(sample(c(0, 1), nindiv * nsnp, replace = T), ncol = nsnp)
+y1 = geno1[, 1] * 8 + geno1[, 10] * 5 + rpois(nindiv, 5)
+y2 = geno2[, 1] * 8 + geno2[, 10] * 5 + rpois(nindiv, 5)
+e = finemapAim(
+  eqtl, geno1, geno2, y1, y2, 
+  path_to_aim = 'path_to_aim_repo/aim.jar', 
+  temp_prefix = 'test_finemapAim')
+}
+
+}

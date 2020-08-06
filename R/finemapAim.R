@@ -29,6 +29,23 @@
 #' @importFrom stats sd
 #' @importFrom utils read.table write.table
 #'
+#' @examples
+#' \dontrun{
+#' nsnp = 100
+#' nindiv = 200
+#' eqtl = rnorm(nsnp)
+#' eqtl[1] = 12.5
+#' eqtl[10] = 8.3
+#' geno1 = matrix(sample(c(0, 1), nindiv * nsnp, replace = T), ncol = nsnp)
+#' geno2 = matrix(sample(c(0, 1), nindiv * nsnp, replace = T), ncol = nsnp)
+#' y1 = geno1[, 1] * 8 + geno1[, 10] * 5 + rpois(nindiv, 5)
+#' y2 = geno2[, 1] * 8 + geno2[, 10] * 5 + rpois(nindiv, 5)
+#' e = finemapAim(
+#'   eqtl, geno1, geno2, y1, y2, 
+#'   path_to_aim = 'path_to_aim_repo/aim.jar', 
+#'   temp_prefix = 'test_finemapAim')
+#' }
+#'
 #' @export
 finemapAim = function(eqtl, geno1, geno2, y1, y2, path_to_aim, temp_prefix='temp') {
 
@@ -40,7 +57,7 @@ finemapAim = function(eqtl, geno1, geno2, y1, y2, path_to_aim, temp_prefix='temp
   eqtl = eqtl[!bad_geno]
 
   eqtl_file = paste0(temp_prefix, '.eqtl_score.tsv')
-  df_eqtl = data.frame(variant_id = rep('snp', 1 : length(eqtl)), z_score = eqtl, pval = .z2p(eqtl))
+  df_eqtl = data.frame(variant_id = paste0('1_', 1 : length(eqtl), '_A_T_snp'), z_score = eqtl, pval = .z2p(eqtl))
   write.table(df_eqtl, eqtl_file, sep = '\t', quote = F, row.names = F, col.names = F)
 
   geno_file = paste0(temp_prefix, '.genotype.tsv')
@@ -48,11 +65,11 @@ finemapAim = function(eqtl, geno1, geno2, y1, y2, path_to_aim, temp_prefix='temp
   colnames(df_geno) = paste0('indiv', 1 : ncol(df_geno))
   df_geno = cbind(df_eqtl$variant_id, df_geno)
   colnames(df_geno)[1] = 'Id'
-  write.table(df_geno, geno_file, sep = '\t', quote = F, row.names = F, col.names = F)
+  write.table(df_geno, geno_file, sep = '\t', quote = F, row.names = F, col.names = T)
 
   ase_file = paste0(temp_prefix, '.ase.tsv')
   df_asc = data.frame(SAMPLE_ID = paste0('indiv', 1 : length(y1)), H1_COUNT = y1, H2_COUNT = y2)
-  write.table(df_geno, ase_file, sep = '\t', quote = F, row.names = F, col.names = T)
+  write.table(df_asc, ase_file, sep = '\t', quote = F, row.names = F, col.names = T)
 
   aim_prefix = paste0(temp_prefix, '.aim')
   call = paste0('java -jar ', path_to_aim, ' mapase -m ', eqtl_file, ' -a ', geno_file, ' -b ', ase_file, ' -o . -t ', aim_prefix)

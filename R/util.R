@@ -33,7 +33,7 @@
 
   # when not both CS is non-empty
   if(is.null(cs1) & is.null(cs2)) {
-    if(mean(pip1) > mean(pip2)) {
+    if(mean(pip1$variable_prob) > mean(pip2$variable_prob)) {
       return(list(cs = cs1, vars = pip1))
     } else {
       return(list(cs = cs2, vars = pip2))
