@@ -94,8 +94,8 @@ finemapAim = function(eqtl, geno1, geno2, y1, y2, path_to_aim, temp_dir = '.', t
   meta1 = meta1 / sqrt(2)
 
   # step 4: fine-mapping
-  mod1 = suppressWarnings(susie_rss(meta1, ld_meta))
-  mod2 = suppressWarnings(susie_rss(meta2, ld_meta))
+  mod1 = suppressWarnings(susie_rss(meta1, ld_meta, check_z = FALSE))
+  mod2 = suppressWarnings(susie_rss(meta2, ld_meta, check_z = FALSE))
   mod = .merge_two_results(mod1, mod2)
 
   mod
