@@ -10,6 +10,7 @@
   })
 }
 
+#' @importFrom stats cor
 .get_ld = function(mat) {
   mat = .standardize(mat)
   cor(mat)
