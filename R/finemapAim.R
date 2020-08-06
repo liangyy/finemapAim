@@ -77,7 +77,7 @@ finemapAim = function(eqtl, geno1, geno2, y1, y2, path_to_aim, temp_prefix='temp
   df_aim = read.table(paste0(aim_prefix, '_mapase'), header = F)
 
   # clean up meta files
-  .clean_up(c(eqtl_file, ase_file, paste0(aim_prefix, '_mapase')))
+  .clean_up(c(geno_file, eqtl_file, ase_file, paste0(aim_prefix, '_mapase')))
 
   # step 2: LD matrix for eQTL and AIM and get meta LD
   # re-implement https://github.com/jzou1115/aim/blob/master/sample_pipeline/computeLDMatrix.py
