@@ -62,7 +62,7 @@ finemapAim = function(eqtl, geno1, geno2, y1, y2, path_to_aim, temp_dir = '.', t
   df_eqtl = data.frame(variant_id = paste0('1_', 1 : length(eqtl), '_A_T_snp'), z_score = eqtl, pval = .z2p(eqtl))
   write.table(df_eqtl, eqtl_file, sep = '\t', quote = F, row.names = F, col.names = F)
 
-  geno_file = paste0(temp_prefix, '.genotype.tsv')
+  geno_file = paste0(temp_dir, '/', temp_prefix, '.genotype.tsv')
   df_geno = as.data.frame(t(geno))
   colnames(df_geno) = paste0('indiv', 1 : ncol(df_geno))
   df_geno = cbind(df_eqtl$variant_id, df_geno)
