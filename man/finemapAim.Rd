@@ -52,8 +52,8 @@ geno2 = matrix(sample(c(0, 1), nindiv * nsnp, replace = T), ncol = nsnp)
 y1 = geno1[, 1] * 8 + geno1[, 10] * 5 + rpois(nindiv, 5)
 y2 = geno2[, 1] * 8 + geno2[, 10] * 5 + rpois(nindiv, 5)
 e = finemapAim(
-  eqtl, geno1, geno2, y1, y2, 
-  path_to_aim = 'path_to_aim_repo/aim.jar', 
+  eqtl, geno1, geno2, y1, y2,
+  path_to_aim = 'path_to_aim_repo/aim.jar',
   temp_prefix = 'test_finemapAim')
 }
 

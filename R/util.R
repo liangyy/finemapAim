@@ -54,3 +54,11 @@
     return(list(cs = cs2, vars = pip2))
   }
 }
+
+.clean_up = function(files) {
+  for(ff in files) {
+    if (file.exists(ff)) {
+      file.remove(ff)
+    }
+  }
+}

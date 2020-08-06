@@ -41,8 +41,8 @@
 #' y1 = geno1[, 1] * 8 + geno1[, 10] * 5 + rpois(nindiv, 5)
 #' y2 = geno2[, 1] * 8 + geno2[, 10] * 5 + rpois(nindiv, 5)
 #' e = finemapAim(
-#'   eqtl, geno1, geno2, y1, y2, 
-#'   path_to_aim = 'path_to_aim_repo/aim.jar', 
+#'   eqtl, geno1, geno2, y1, y2,
+#'   path_to_aim = 'path_to_aim_repo/aim.jar',
 #'   temp_prefix = 'test_finemapAim')
 #' }
 #'
@@ -75,6 +75,9 @@ finemapAim = function(eqtl, geno1, geno2, y1, y2, path_to_aim, temp_prefix='temp
   call = paste0('java -jar ', path_to_aim, ' mapase -m ', eqtl_file, ' -a ', geno_file, ' -b ', ase_file, ' -o . -t ', aim_prefix)
   system(call)
   df_aim = read.table(paste0(aim_prefix, '_mapase'), header = F)
+
+  # clean up meta files
+  .clean_up(c(eqtl_file, ase_file, paste0(aim_prefix, '_mapase')))
 
   # step 2: LD matrix for eQTL and AIM and get meta LD
   # re-implement https://github.com/jzou1115/aim/blob/master/sample_pipeline/computeLDMatrix.py
