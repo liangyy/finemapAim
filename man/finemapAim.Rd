@@ -4,7 +4,16 @@
 \alias{finemapAim}
 \title{Wrapper for fine-mapping method described in https://doi.org/10.1371/journal.pgen.1008481}
 \usage{
-finemapAim(eqtl, geno1, geno2, y1, y2, path_to_aim, temp_prefix = "temp")
+finemapAim(
+  eqtl,
+  geno1,
+  geno2,
+  y1,
+  y2,
+  path_to_aim,
+  temp_dir = ".",
+  temp_prefix = "temp"
+)
 }
 \arguments{
 \item{eqtl}{A vector describing eQTL summary statistic data. It should be z-score.}
@@ -23,6 +32,8 @@ the same as geno1.}
 
 \item{path_to_aim}{This function relies on external Java executable at
 \url{https://github.com/jzou1115/aim/blob/master/aim.jar} so here please provide the path to the JAR file.}
+
+\item{temp_dir}{Directory for temporary files.}
 
 \item{temp_prefix}{Prefix of the temporary files.}
 }
@@ -54,6 +65,7 @@ y2 = geno2[, 1] * 8 + geno2[, 10] * 5 + rpois(nindiv, 5)
 e = finemapAim(
   eqtl, geno1, geno2, y1, y2,
   path_to_aim = 'path_to_aim_repo/aim.jar',
+  temp_dir = '.',
   temp_prefix = 'test_finemapAim')
 }
 
