@@ -18,6 +18,7 @@
 #' the same as geno1.
 #' @param y2 A vector describing the allele-specific count data of haplotype 2. The individual order should be
 #' the same as geno1.
+#' @param temp_dir Directory for temporary files.
 #' @param temp_prefix Prefix of the temporary files.
 #'
 #' @param path_to_aim This function relies on external Java executable at
@@ -43,11 +44,12 @@
 #' e = finemapAim(
 #'   eqtl, geno1, geno2, y1, y2,
 #'   path_to_aim = 'path_to_aim_repo/aim.jar',
+#'   temp_dir = '.',
 #'   temp_prefix = 'test_finemapAim')
 #' }
 #'
 #' @export
-finemapAim = function(eqtl, geno1, geno2, y1, y2, path_to_aim, temp_prefix='temp') {
+finemapAim = function(eqtl, geno1, geno2, y1, y2, path_to_aim, temp_dir = '.', temp_prefix = 'temp') {
 
   # step 1
   # run AIM
@@ -56,7 +58,7 @@ finemapAim = function(eqtl, geno1, geno2, y1, y2, path_to_aim, temp_prefix='temp
   geno = geno[, !bad_geno, drop = F]
   eqtl = eqtl[!bad_geno]
 
-  eqtl_file = paste0(temp_prefix, '.eqtl_score.tsv')
+  eqtl_file = paste0(temp_dir, '/',temp_prefix, '.eqtl_score.tsv')
   df_eqtl = data.frame(variant_id = paste0('1_', 1 : length(eqtl), '_A_T_snp'), z_score = eqtl, pval = .z2p(eqtl))
   write.table(df_eqtl, eqtl_file, sep = '\t', quote = F, row.names = F, col.names = F)
 
@@ -67,17 +69,17 @@ finemapAim = function(eqtl, geno1, geno2, y1, y2, path_to_aim, temp_prefix='temp
   colnames(df_geno)[1] = 'Id'
   write.table(df_geno, geno_file, sep = '\t', quote = F, row.names = F, col.names = T)
 
-  ase_file = paste0(temp_prefix, '.ase.tsv')
+  ase_file = paste0(temp_dir, '/',temp_prefix, '.ase.tsv')
   df_asc = data.frame(SAMPLE_ID = paste0('indiv', 1 : length(y1)), H1_COUNT = y1, H2_COUNT = y2)
   write.table(df_asc, ase_file, sep = '\t', quote = F, row.names = F, col.names = T)
 
   aim_prefix = paste0(temp_prefix, '.aim')
-  call = paste0('java -jar ', path_to_aim, ' mapase -m ', eqtl_file, ' -a ', geno_file, ' -b ', ase_file, ' -o . -t ', aim_prefix)
+  call = paste0('java -jar ', path_to_aim, ' mapase -m ', eqtl_file, ' -a ', geno_file, ' -b ', ase_file, ' -o ', temp_dir, ' -t ', aim_prefix, ' > /dev/null')
   system(call)
-  df_aim = read.table(paste0(aim_prefix, '_mapase'), header = F)
+  df_aim = read.table(paste0(temp_dir, '/',aim_prefix, '_mapase'), header = F)
 
   # clean up meta files
-  .clean_up(c(geno_file, eqtl_file, ase_file, paste0(aim_prefix, '_mapase')))
+  .clean_up(c(geno_file, eqtl_file, ase_file, paste0(temp_dir, '/',aim_prefix, '_mapase')))
 
   # step 2: LD matrix for eQTL and AIM and get meta LD
   # re-implement https://github.com/jzou1115/aim/blob/master/sample_pipeline/computeLDMatrix.py
@@ -92,8 +94,8 @@ finemapAim = function(eqtl, geno1, geno2, y1, y2, path_to_aim, temp_prefix='temp
   meta1 = meta1 / sqrt(2)
 
   # step 4: fine-mapping
-  mod1 = susie_rss(meta1, ld_meta)
-  mod2 = susie_rss(meta2, ld_meta)
+  mod1 = suppressWarnings(susie_rss(meta1, ld_meta))
+  mod2 = suppressWarnings(susie_rss(meta2, ld_meta))
   mod = .merge_two_results(mod1, mod2)
 
   mod
