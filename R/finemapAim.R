@@ -55,6 +55,7 @@ finemapAim = function(eqtl, geno1, geno2, y1, y2, path_to_aim, temp_dir = '.', t
   # run AIM
   geno = geno1 + geno2
   bad_geno = apply(geno, 2, sd) == 0
+  bad_geno = bad_geno | apply(.get_heterozygosity(geno), 2, sd) == 0
   geno = geno[, !bad_geno, drop = F]
   eqtl = eqtl[!bad_geno]
 
@@ -94,9 +95,11 @@ finemapAim = function(eqtl, geno1, geno2, y1, y2, path_to_aim, temp_dir = '.', t
   meta1 = meta1 / sqrt(2)
 
   # step 4: fine-mapping
+  # saveRDS(list(meta1, meta2, ld_meta), paste0(temp_dir, '/', temp_prefix, '.rds'))
   mod1 = suppressWarnings(susie_rss(meta1, ld_meta, check_z = FALSE))
   mod2 = suppressWarnings(susie_rss(meta2, ld_meta, check_z = FALSE))
   mod = .merge_two_results(mod1, mod2)
+  mod = .update_idx(mod, bad_geno)
 
   mod
 }

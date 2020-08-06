@@ -63,3 +63,24 @@
     }
   }
 }
+
+.update_idx = function(mod, bin_vec) {
+  rownames(mod$vars) = NULL
+  if(sum(bin_vec) == 0) {
+    return(mod)
+  }
+  new_index = 1 : length(bin_vec)
+  old_index_to_new_index = new_index[!bin_vec]
+  if(!is.null(mod$cs)) {
+    for(i in 1 : nrow(mod$cs)) {
+      old = mod$cs$variable[i]
+      new = paste0(unlist(lapply(strsplit(old, ','), function(x) { old_index_to_new_index[as.numeric(x)] })), collapse = ',')
+      mod$cs$variable[i] = new
+    }
+  }
+  new = sapply(mod$vars$variable, function(x) { old_index_to_new_index[x] })
+  mod$vars$variable = new
+  df_extra = data.frame(variable = new_index[! new_index %in% new], variable_prob = 0, cs = -1)
+  mod$vars = rbind(mod$vars, df_extra)
+  mod
+}
