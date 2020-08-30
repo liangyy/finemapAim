@@ -10,7 +10,8 @@ finemapAim(
   geno2,
   y1,
   y2,
-  path_to_aim,
+  ase_internal = TRUE,
+  path_to_aim = NULL,
   temp_dir = ".",
   temp_prefix = "temp"
 )
@@ -29,6 +30,8 @@ the same as geno1.}
 
 \item{y2}{A vector describing the allele-specific count data of haplotype 2. The individual order should be
 the same as geno1.}
+
+\item{ase_internal}{A logical scalar telling whether to use internal function for ASE calculation.}
 
 \item{path_to_aim}{This function relies on external Java executable at
 \url{https://github.com/jzou1115/aim/blob/master/aim.jar} so here please provide the path to the JAR file.}
