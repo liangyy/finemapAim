@@ -11,13 +11,12 @@
 #'
 #' @param eqtl A vector describing eQTL summary statistic data. It should be z-score.
 #' @param geno1 A matrix containing genotype data of haplotype 1 (individual x SNP). The SNP order should be the same
-#' as eqtl.
-#' @param geno2 A matrix containing genotype data of haplotype 1 (individual x SNP). The SNP order should be the same
-#' as eqtl and the individual order should be the same as geno1.
-#' @param y1 A vector describing the allele-specific count data of haplotype 1. The individual order should be
-#' the same as geno1.
-#' @param y2 A vector describing the allele-specific count data of haplotype 2. The individual order should be
-#' the same as geno1.
+#' as eqtl. Row name is individual ID.
+#' @param geno2 A matrix containing genotype data of haplotype 2 (individual x SNP). The SNP order should be the same
+#' as eqtl. Row name is individual ID.
+#' @param y1 A vector describing the allele-specific count data of haplotype 1. Name is individual ID.
+#' @param y2 A vector describing the allele-specific count data of haplotype 2. Name is individual ID. 
+#' (individual order should match y1).
 #' @param temp_dir Directory for temporary files.
 #' @param temp_prefix Prefix of the temporary files.
 #'
@@ -65,13 +64,13 @@ finemapAim = function(eqtl, geno1, geno2, y1, y2, path_to_aim, temp_dir = '.', t
 
   geno_file = paste0(temp_dir, '/', temp_prefix, '.genotype.tsv')
   df_geno = as.data.frame(t(geno))
-  colnames(df_geno) = paste0('indiv', 1 : ncol(df_geno))
+  colnames(df_geno) = rownames(geno)
   df_geno = cbind(df_eqtl$variant_id, df_geno)
   colnames(df_geno)[1] = 'Id'
   write.table(df_geno, geno_file, sep = '\t', quote = F, row.names = F, col.names = T)
 
   ase_file = paste0(temp_dir, '/',temp_prefix, '.ase.tsv')
-  df_asc = data.frame(SAMPLE_ID = paste0('indiv', 1 : length(y1)), H1_COUNT = y1, H2_COUNT = y2)
+  df_asc = data.frame(SAMPLE_ID = names(y1), H1_COUNT = y1, H2_COUNT = y2)
   write.table(df_asc, ase_file, sep = '\t', quote = F, row.names = F, col.names = T)
 
   aim_prefix = paste0(temp_prefix, '.aim')
