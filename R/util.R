@@ -7,15 +7,17 @@
   # loop over snp
   out = rep(NA, nrow(df_geno))
   for(i in 1 : nrow(df_geno)) {
-    snpid = df_geno[i, 1]
+    # snpid = df_geno[i, 1]
     # add genotype
-    now = cbind(df_ref, data.frame(geno = df_geno[i, -1]))
+    now = cbind(df_ref, data.frame(geno = as.numeric(df_geno[i, -1])))
     # add ase
-    now = left_join(now, df_asc, by = c('indiv' = 'SUBJECT_ID'))
+    now = left_join(now, df_asc, by = c('indiv' = 'SAMPLE_ID'))
     # fill ase NA's with zeros (they are treated as zeros in AIM code)
     # https://github.com/jzou1115/aim/blob/0e8d39d9b7c0d47fc67d6824873b11c4f11dad4d/src/parse/ParseExpressions.java#L44
     now$H1_COUNT[is.na(now$H1_COUNT)] = 0
     now$H2_COUNT[is.na(now$H2_COUNT)] = 0
+    # remove individuals with all zeros
+    now = now[ (now$H1_COUNT + now$H2_COUNT) > 20, ]
     # calc allelic ratio and ASE binary
     # https://github.com/jzou1115/aim/blob/0e8d39d9b7c0d47fc67d6824873b11c4f11dad4d/src/parse/ParseExpressions.java#L76
     allelic_ratio = now$H1_COUNT / (now$H1_COUNT + now$H2_COUNT)
@@ -39,16 +41,24 @@
     b = sum( ( now$binary_ase == 0 ) & ( now$is_heter == 1 ) )
     m = sum( now$binary_ase == 1 )
     k = sum( now$is_heter == 1 )
-    p1 = a / m
-    p2 = b / (nrow(now) - m)
+    if(m != 0) {
+      p1 = a / m
+    } else {
+      p1 = 0
+    }
+    if((nrow(now) - m) != 0) {
+      p2 = b / (nrow(now) - m)
+    } else {
+      p2 = 0
+    }
     p3 = (p1 + p2) / 2
     p3 = max(p3, 1e-7); p3 = min(p3, 1 - 1e-7)
     n1 = 2 * m
     n2 = 2 * (nrow(now) - m)
-    s = (p1 - p2) / sqrt(p3 * (1 - p3) * (n1 + n2) / (n1 * n2))
+    s = (p1 - p2) * sqrt((n1 * n2) / (p3 * (1 - p3) * (n1 + n2)))
     out[i] = s
   }
-  data.frame(V1 = df_geno[, 1], V2 = s)
+  data.frame(V1 = df_geno[, 1], V2 = out)
 }
 
 

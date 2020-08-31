@@ -83,15 +83,12 @@ finemapAim = function(eqtl, geno1, geno2, y1, y2, ase_internal = TRUE, path_to_a
     call = paste0('java -jar ', path_to_aim, ' mapase -m ', eqtl_file, ' -a ', geno_file, ' -b ', ase_file, ' -o ', temp_dir, ' -t ', aim_prefix, ' > /dev/null')
     system(call)
     df_aim = read.table(paste0(temp_dir, '/',aim_prefix, '_mapase'), header = F)
+    # clean up meta files
+    .clean_up(c(geno_file, eqtl_file, ase_file, paste0(temp_dir, '/',aim_prefix, '_mapase')))
   } else {
     df_aim = .calc_ase_sum_stat(df_asc, df_geno)
   }
   
-  
-
-  # clean up meta files
-  .clean_up(c(geno_file, eqtl_file, ase_file, paste0(temp_dir, '/',aim_prefix, '_mapase')))
-
   # step 2: LD matrix for eQTL and AIM and get meta LD
   # re-implement https://github.com/jzou1115/aim/blob/master/sample_pipeline/computeLDMatrix.py
   ld_eqtl = .get_ld(geno)
